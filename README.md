@@ -1,4 +1,91 @@
-# TurboVetsTaskManager
+# TurboVets Task Management System
+
+A secure task management system built with NX monorepo, featuring role-based access control (RBAC) and JWT authentication.
+
+## Architecture Overview
+
+This project uses an NX monorepo structure with the following components:
+
+### Apps
+- **`apps/api`** - NestJS backend API with TypeORM and SQLite
+- **`apps/dashboard`** - Angular frontend with TailwindCSS
+
+### Libraries
+- **`libs/data`** - Shared TypeScript interfaces and DTOs
+- **`libs/auth`** - RBAC logic and JWT authentication utilities
+
+## Project Structure
+
+```
+TurboVetsTaskManager/
+├── apps/
+│   ├── api/                 # NestJS Backend
+│   └── dashboard/           # Angular Frontend
+├── libs/
+│   ├── data/               # Shared Data Models
+│   └── auth/               # Authentication & RBAC
+├── package.json
+├── nx.json
+└── tsconfig.base.json
+```
+
+## Setup Instructions
+
+### Prerequisites
+- Node.js (v18 or higher)
+- npm
+
+### Installation
+```bash
+npm install
+```
+
+### Development
+```bash
+# Start backend API
+nx serve api
+
+# Start frontend dashboard
+nx serve dashboard
+```
+
+## Data Models
+
+### User
+- Basic user information with role-based access
+- Roles: Owner, Admin, Viewer
+- Organization-based hierarchy
+
+### Organization
+- 2-level hierarchy support
+- Parent-child organization relationships
+
+### Task
+- Task management with status, priority, and categories
+- Organization-scoped access control
+- Assignment and due date support
+
+### Audit Log
+- Track all user actions and access
+- Security and compliance logging
+
+## Access Control Design
+
+The system implements a comprehensive RBAC system:
+
+- **Owner**: Full access to organization resources
+- **Admin**: Manage tasks and users within organization
+- **Viewer**: Read-only access to organization resources
+
+All access is scoped to the user's organization with proper permission checks.
+
+## Next Steps
+
+This is Stage 1 of the implementation. Future stages will include:
+- Backend API implementation with authentication
+- Frontend dashboard with task management
+- Advanced RBAC features and testing
+- Documentation and deployment setup
 
 <a alt="Nx logo" href="https://nx.dev" target="_blank" rel="noreferrer"><img src="https://raw.githubusercontent.com/nrwl/nx/master/images/nx-logo.png" width="45"></a>
 
