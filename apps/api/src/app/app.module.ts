@@ -8,6 +8,8 @@ import { AuthModule } from './auth/auth.module';
 import { TasksModule } from './tasks/tasks.module';
 import { AuditModule } from './audit/audit.module';
 import { SeedModule } from './seed/seed.module';
+import { UsersModule } from './users/users.module';
+import { OrganizationsModule } from './organizations/organizations.module';
 
 @Module({
   imports: [
@@ -19,6 +21,8 @@ import { SeedModule } from './seed/seed.module';
     TasksModule,
     AuditModule,
     SeedModule,
+    UsersModule,
+    OrganizationsModule,
   ],
   controllers: [AppController],
   providers: [AppService],

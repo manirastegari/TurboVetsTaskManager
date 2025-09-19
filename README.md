@@ -79,13 +79,300 @@ The system implements a comprehensive RBAC system:
 
 All access is scoped to the user's organization with proper permission checks.
 
-## Next Steps
+## API Documentation
 
-This is Stage 1 of the implementation. Future stages will include:
-- Backend API implementation with authentication
-- Frontend dashboard with task management
-- Advanced RBAC features and testing
-- Documentation and deployment setup
+### Authentication Endpoints
+
+#### POST /api/auth/login
+Login with email and password.
+
+**Request Body:**
+```json
+{
+  "email": "owner@turbovets.com",
+  "password": "password123"
+}
+```
+
+**Response:**
+```json
+{
+  "access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+  "user": {
+    "id": "uuid",
+    "email": "owner@turbovets.com",
+    "firstName": "John",
+    "lastName": "Owner",
+    "role": "owner",
+    "organizationId": "uuid",
+    "createdAt": "2025-09-18T21:15:15.000Z",
+    "updatedAt": "2025-09-18T21:15:15.000Z"
+  }
+}
+```
+
+#### POST /api/auth/register
+Register a new user (requires authentication).
+
+**Request Body:**
+```json
+{
+  "email": "newuser@example.com",
+  "password": "password123",
+  "firstName": "New",
+  "lastName": "User",
+  "role": "viewer",
+  "organizationId": "uuid"
+}
+```
+
+### Task Management Endpoints
+
+#### GET /api/tasks
+Get all tasks accessible to the current user.
+
+**Headers:** `Authorization: Bearer <token>`
+
+**Response:**
+```json
+[
+  {
+    "id": "uuid",
+    "title": "Complete project documentation",
+    "description": "Write comprehensive API documentation",
+    "status": "in_progress",
+    "priority": "high",
+    "category": "Work",
+    "assignedToId": "uuid",
+    "createdById": "uuid",
+    "organizationId": "uuid",
+    "dueDate": "2025-09-25T00:00:00.000Z",
+    "createdAt": "2025-09-18T21:15:15.000Z",
+    "updatedAt": "2025-09-18T21:15:15.000Z"
+  }
+]
+```
+
+#### POST /api/tasks
+Create a new task.
+
+**Request Body:**
+```json
+{
+  "title": "New Task",
+  "description": "Task description",
+  "priority": "medium",
+  "category": "Work",
+  "assignedToId": "uuid",
+  "dueDate": "2025-09-25T00:00:00.000Z"
+}
+```
+
+#### PATCH /api/tasks/:id
+Update a task.
+
+#### PATCH /api/tasks/:id/status
+Update task status.
+
+**Request Body:**
+```json
+{
+  "status": "done"
+}
+```
+
+#### DELETE /api/tasks/:id
+Delete a task.
+
+### User Management Endpoints
+
+#### GET /api/users
+Get all users accessible to the current user.
+
+#### POST /api/users
+Create a new user (Owner/Admin only).
+
+#### GET /api/users/:id
+Get user by ID.
+
+#### PATCH /api/users/:id
+Update user information.
+
+#### DELETE /api/users/:id
+Delete a user.
+
+### Organization Management Endpoints
+
+#### GET /api/organizations
+Get all organizations accessible to the current user.
+
+#### POST /api/organizations
+Create a new organization (Owner only).
+
+#### GET /api/organizations/:id
+Get organization by ID.
+
+#### PATCH /api/organizations/:id
+Update organization information.
+
+#### DELETE /api/organizations/:id
+Delete an organization.
+
+### Audit Log Endpoints
+
+#### GET /api/audit
+Get audit logs (Owner/Admin only).
+
+**Query Parameters:**
+- `userId` (optional): Filter by user ID
+- `resource` (optional): Filter by resource type
+
+## Role-Based Access Control (RBAC)
+
+### Roles and Permissions
+
+#### Owner
+- **Full access** to all resources in their organization
+- Can create, read, update, and delete users, tasks, and organizations
+- Can view audit logs
+- Can manage all users in their organization
+
+#### Admin
+- Can create, read, update, and delete tasks
+- Can read and update users (only those they created)
+- Can read organizations
+- Can view audit logs
+- Cannot delete users or organizations
+
+#### Viewer
+- **Read-only access** to tasks, users, and organizations
+- Can only see tasks assigned to them or created by them
+- Can only see their own user information
+- Cannot create, update, or delete any resources
+
+### Organization Hierarchy
+
+The system supports a 2-level organization hierarchy:
+- **Parent Organization**: Top-level organization (e.g., "TurboVets Corp")
+- **Child Organization**: Sub-organizations (e.g., "Engineering Team")
+
+Access is scoped to the user's organization and its children.
+
+## Test Accounts
+
+The system comes with pre-seeded test accounts:
+
+| Email | Password | Role | Organization |
+|-------|----------|------|--------------|
+| owner@turbovets.com | password123 | Owner | TurboVets Corp |
+| admin@turbovets.com | password123 | Admin | Engineering Team |
+| viewer@turbovets.com | password123 | Viewer | Engineering Team |
+
+## Security Features
+
+- **JWT Authentication**: Secure token-based authentication
+- **Password Hashing**: Bcrypt with salt rounds
+- **Role-Based Access Control**: Granular permissions system
+- **Organization Scoping**: Data isolation between organizations
+- **Audit Logging**: Complete action tracking
+- **Input Validation**: Request validation and sanitization
+- **CORS Protection**: Configured for frontend integration
+
+## Development
+
+### Running the Application
+
+```bash
+# Install dependencies
+npm install
+
+# Start backend API
+nx serve api
+
+# Start frontend dashboard
+nx serve dashboard
+```
+
+### Testing
+
+```bash
+# Run backend tests
+nx test api
+
+# Run frontend tests
+nx test dashboard
+
+# Run all tests
+nx run-many --target=test --all
+```
+
+### Building for Production
+
+```bash
+# Build backend
+nx build api
+
+# Build frontend
+nx build dashboard
+
+# Build all
+nx run-many --target=build --all
+```
+
+## Architecture Decisions
+
+### Database Choice
+- **SQLite**: Chosen for simplicity and portability
+- **TypeORM**: Object-relational mapping with decorators
+- **Entity-based**: Clear data models with relationships
+
+### Authentication Strategy
+- **JWT Tokens**: Stateless authentication
+- **Bearer Token**: Standard HTTP header authentication
+- **Token Expiration**: 24-hour token lifetime
+
+### Frontend Architecture
+- **Angular Standalone Components**: Modern Angular approach
+- **Service-based**: Clean separation of concerns
+- **Reactive Forms**: Form validation and handling
+- **Custom CSS**: Tailwind-inspired utility classes
+
+### Security Considerations
+- **Password Hashing**: Bcrypt with appropriate salt rounds
+- **Input Validation**: Class-validator decorators
+- **SQL Injection Protection**: TypeORM query builder
+- **XSS Protection**: Angular's built-in sanitization
+- **CORS Configuration**: Restricted to frontend origin
+
+## Future Enhancements
+
+### Security Improvements
+- JWT refresh token implementation
+- Rate limiting and request throttling
+- CSRF protection
+- Advanced audit logging with IP tracking
+- Password complexity requirements
+
+### Scalability Features
+- Database connection pooling
+- Redis caching for permissions
+- Microservices architecture
+- Load balancing support
+- Database migration system
+
+### User Experience
+- Real-time notifications
+- Advanced task filtering and search
+- Drag-and-drop task management
+- Dark mode support
+- Mobile-responsive design improvements
+
+### Advanced RBAC
+- Custom permission sets
+- Role delegation
+- Time-based access controls
+- Resource-level permissions
+- Multi-tenant support
 
 <a alt="Nx logo" href="https://nx.dev" target="_blank" rel="noreferrer"><img src="https://raw.githubusercontent.com/nrwl/nx/master/images/nx-logo.png" width="45"></a>
 
