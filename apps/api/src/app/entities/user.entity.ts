@@ -22,8 +22,7 @@ export class User implements IUser {
   lastName: string;
 
   @Column({
-    type: 'enum',
-    enum: Role,
+    type: 'varchar',
     default: Role.VIEWER
   })
   role: Role;
