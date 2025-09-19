@@ -100,9 +100,9 @@ export class UsersService {
       throw new ForbiddenException('Insufficient permissions to update users');
     }
 
-    // Additional check for admins - they can only update users they created or are assigned to
-    if (user.role === Role.ADMIN && targetUser.createdById !== user.id) {
-      throw new ForbiddenException('Can only update users you created');
+    // Additional check for admins - they can only update users in their organization
+    if (user.role === Role.ADMIN && targetUser.organizationId !== user.organizationId) {
+      throw new ForbiddenException('Can only update users in your organization');
     }
 
     // Hash password if provided
@@ -123,8 +123,8 @@ export class UsersService {
     }
 
     // Additional check for admins
-    if (user.role === Role.ADMIN && targetUser.createdById !== user.id) {
-      throw new ForbiddenException('Can only delete users you created');
+    if (user.role === Role.ADMIN && targetUser.organizationId !== user.organizationId) {
+      throw new ForbiddenException('Can only delete users in your organization');
     }
 
     // Prevent self-deletion
